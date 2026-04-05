@@ -17,6 +17,8 @@ export type Competition = {
   /** Color de marca (hex) para el fondo al hover. */
   hoverBg: string;
   logoHover: CompetitionLogoHover;
+  /** Ruta interna de la liga (ej. /league/premier-league/). */
+  leagueHref?: string;
 };
 
 export const COMPETITIONS: Competition[] = [
@@ -26,6 +28,7 @@ export const COMPETITIONS: Competition[] = [
     logo: englandEpl,
     hoverBg: "#37003c",
     logoHover: "white",
+    leagueHref: "/league/premier-league/",
   },
   {
     id: "laliga",

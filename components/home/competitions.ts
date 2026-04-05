@@ -76,5 +76,6 @@ export const COMPETITIONS: Competition[] = [
     logo: uefaEuropa,
     hoverBg: "#ff6900",
     logoHover: "white",
+    leagueHref: "/league/europa-league/",
   },
 ];

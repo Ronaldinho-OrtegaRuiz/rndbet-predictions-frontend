@@ -44,6 +44,7 @@ export const COMPETITIONS: Competition[] = [
     logo: italySerieA,
     hoverBg: "#082040",
     logoHover: "original",
+    leagueHref: "/league/serie-a/",
   },
   {
     id: "bundesliga",

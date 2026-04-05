@@ -1,5 +1,5 @@
-import { Login } from "./components/Login";
+import { LoginScreen } from "@/components/auth/login";
 
 export default function Home() {
-  return <Login />;
+  return <LoginScreen />;
 }

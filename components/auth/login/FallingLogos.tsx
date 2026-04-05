@@ -6,13 +6,13 @@ import {
   type CSSProperties,
   type RefObject,
 } from "react";
-import englandEpl from "../../svgs/england_english-premier-league.football-logos.cc.svg";
-import franceLigue1 from "../../svgs/france_ligue-1.football-logos.cc.svg";
-import germanyBundesliga from "../../svgs/germany_bundesliga.football-logos.cc.svg";
-import italySerieA from "../../svgs/italy_serie-a.football-logos.cc.svg";
-import spainLaLiga from "../../svgs/spain_la-liga.football-logos.cc.svg";
-import uefaChampions from "../../svgs/tournaments_uefa-champions-league.football-logos.cc.svg";
-import uefaEuropa from "../../svgs/tournaments_uefa-europa-league.football-logos.cc.svg";
+import englandEpl from "@/svgs/competitions/england_english-premier-league.football-logos.cc.svg";
+import franceLigue1 from "@/svgs/competitions/france_ligue-1.football-logos.cc.svg";
+import germanyBundesliga from "@/svgs/competitions/germany_bundesliga.football-logos.cc.svg";
+import italySerieA from "@/svgs/competitions/italy_serie-a.football-logos.cc.svg";
+import spainLaLiga from "@/svgs/competitions/spain_la-liga.football-logos.cc.svg";
+import uefaChampions from "@/svgs/competitions/tournaments_uefa-champions-league.football-logos.cc.svg";
+import uefaEuropa from "@/svgs/competitions/tournaments_uefa-europa-league.football-logos.cc.svg";
 
 const LOGOS = [
   englandEpl,

@@ -1,6 +1,8 @@
+import Link from "next/link";
+
 export function LoginForm() {
   return (
-    <div className="w-full max-w-[400px] rounded-2xl border-2 border-blue-500 bg-transparent px-8 py-10 shadow-[0_8px_30px_rgba(37,99,235,0.12),0_2px_8px_rgba(0,0,0,0.06)]">
+    <div className="w-full max-w-[400px] rounded-xl border border-neutral-200/70 bg-transparent px-8 py-10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-[border-color,box-shadow] hover:border-neutral-300/90 hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
       <h1 className="text-center text-2xl font-semibold tracking-tight text-neutral-900">
         Iniciar sesión
       </h1>
@@ -22,7 +24,7 @@ export function LoginForm() {
             type="text"
             autoComplete="username"
             required
-            className="rounded-lg border border-blue-200 bg-white px-3 py-2.5 text-neutral-900 outline-none transition-[box-shadow,border-color] placeholder:text-neutral-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+            className="rounded-lg border border-neutral-200/80 bg-white px-3 py-2.5 text-neutral-900 outline-none transition-[box-shadow,border-color] placeholder:text-neutral-400 focus:border-neutral-400/90 focus:ring-2 focus:ring-neutral-300/25"
             placeholder="tu_usuario"
           />
         </div>
@@ -40,17 +42,17 @@ export function LoginForm() {
             type="password"
             autoComplete="current-password"
             required
-            className="rounded-lg border border-blue-200 bg-white px-3 py-2.5 text-neutral-900 outline-none transition-[box-shadow,border-color] placeholder:text-neutral-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+            className="rounded-lg border border-neutral-200/80 bg-white px-3 py-2.5 text-neutral-900 outline-none transition-[box-shadow,border-color] placeholder:text-neutral-400 focus:border-neutral-400/90 focus:ring-2 focus:ring-neutral-300/25"
             placeholder="••••••••"
           />
         </div>
 
-        <button
-          type="submit"
-          className="mt-2 rounded-lg border-2 border-blue-600 bg-blue-600 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 hover:border-blue-700"
+        <Link
+          href="/inicio"
+          className="mt-2 flex w-full items-center justify-center rounded-lg border border-neutral-300/80 bg-neutral-100 py-2.5 text-center text-sm font-medium text-neutral-800 transition-colors hover:border-neutral-400/90 hover:bg-neutral-200/80"
         >
           Entrar
-        </button>
+        </Link>
       </form>
     </div>
   );

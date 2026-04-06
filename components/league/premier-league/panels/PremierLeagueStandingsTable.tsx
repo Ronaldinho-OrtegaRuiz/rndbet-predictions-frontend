@@ -1,473 +1,269 @@
-export type FormResult = "W" | "D" | "L";
+"use client";
 
-export type StandingRow = {
-  position: number;
-  team: string;
-  pj: number;
-  pg: number;
-  pe: number;
-  pp: number;
-  gf: number;
-  gc: number;
-  gd: number;
-  points: number;
-  form: FormResult[];
-};
+import { useEffect, useState } from "react";
+import { fetchTablaStandings } from "@/lib/api/fetch-standings";
+import type { FilaTabla, FormaLetra } from "@/lib/api/standings-types";
+import {
+  PREMIER_LEAGUE_COMPETITION_ID,
+  PREMIER_LEAGUE_SEASON_ID,
+} from "../constants/premierLeagueStandingsIds";
 
-const MOCK_STANDINGS: StandingRow[] = [
-  {
-    position: 1,
-    team: "Liverpool",
-    pj: 28,
-    pg: 20,
-    pe: 5,
-    pp: 3,
-    gf: 64,
-    gc: 28,
-    gd: 36,
-    points: 65,
-    form: ["W", "W", "D", "W", "L"],
-  },
-  {
-    position: 2,
-    team: "Arsenal",
-    pj: 28,
-    pg: 18,
-    pe: 6,
-    pp: 4,
-    gf: 58,
-    gc: 30,
-    gd: 28,
-    points: 60,
-    form: ["W", "D", "W", "W", "W"],
-  },
-  {
-    position: 3,
-    team: "Man City",
-    pj: 28,
-    pg: 17,
-    pe: 6,
-    pp: 5,
-    gf: 62,
-    gc: 32,
-    gd: 30,
-    points: 57,
-    form: ["L", "W", "W", "D", "W"],
-  },
-  {
-    position: 4,
-    team: "Chelsea",
-    pj: 28,
-    pg: 15,
-    pe: 7,
-    pp: 6,
-    gf: 48,
-    gc: 35,
-    gd: 13,
-    points: 52,
-    form: ["D", "W", "L", "W", "D"],
-  },
-  {
-    position: 5,
-    team: "Newcastle",
-    pj: 28,
-    pg: 14,
-    pe: 8,
-    pp: 6,
-    gf: 44,
-    gc: 38,
-    gd: 6,
-    points: 50,
-    form: ["W", "L", "D", "D", "W"],
-  },
-  {
-    position: 6,
-    team: "Aston Villa",
-    pj: 28,
-    pg: 13,
-    pe: 7,
-    pp: 8,
-    gf: 42,
-    gc: 40,
-    gd: 2,
-    points: 46,
-    form: ["W", "D", "L", "W", "D"],
-  },
-  {
-    position: 7,
-    team: "Brighton",
-    pj: 28,
-    pg: 12,
-    pe: 9,
-    pp: 7,
-    gf: 45,
-    gc: 42,
-    gd: 3,
-    points: 45,
-    form: ["D", "W", "D", "L", "W"],
-  },
-  {
-    position: 8,
-    team: "Tottenham",
-    pj: 28,
-    pg: 12,
-    pe: 6,
-    pp: 10,
-    gf: 50,
-    gc: 48,
-    gd: 2,
-    points: 42,
-    form: ["L", "W", "W", "L", "D"],
-  },
-  {
-    position: 9,
-    team: "Man Utd",
-    pj: 28,
-    pg: 11,
-    pe: 8,
-    pp: 9,
-    gf: 40,
-    gc: 44,
-    gd: -4,
-    points: 41,
-    form: ["D", "L", "W", "D", "W"],
-  },
-  {
-    position: 10,
-    team: "West Ham",
-    pj: 28,
-    pg: 11,
-    pe: 7,
-    pp: 10,
-    gf: 38,
-    gc: 46,
-    gd: -8,
-    points: 40,
-    form: ["W", "D", "L", "L", "W"],
-  },
-  {
-    position: 11,
-    team: "Brentford",
-    pj: 28,
-    pg: 10,
-    pe: 9,
-    pp: 9,
-    gf: 41,
-    gc: 43,
-    gd: -2,
-    points: 39,
-    form: ["L", "D", "W", "D", "L"],
-  },
-  {
-    position: 12,
-    team: "Fulham",
-    pj: 28,
-    pg: 10,
-    pe: 8,
-    pp: 10,
-    gf: 36,
-    gc: 40,
-    gd: -4,
-    points: 38,
-    form: ["D", "W", "L", "D", "D"],
-  },
-  {
-    position: 13,
-    team: "Crystal Palace",
-    pj: 28,
-    pg: 9,
-    pe: 10,
-    pp: 9,
-    gf: 34,
-    gc: 38,
-    gd: -4,
-    points: 37,
-    form: ["W", "D", "D", "L", "W"],
-  },
-  {
-    position: 14,
-    team: "Everton",
-    pj: 28,
-    pg: 9,
-    pe: 8,
-    pp: 11,
-    gf: 32,
-    gc: 42,
-    gd: -10,
-    points: 35,
-    form: ["L", "W", "D", "L", "D"],
-  },
-  {
-    position: 15,
-    team: "Bournemouth",
-    pj: 28,
-    pg: 8,
-    pe: 9,
-    pp: 11,
-    gf: 39,
-    gc: 48,
-    gd: -9,
-    points: 33,
-    form: ["D", "L", "W", "L", "D"],
-  },
-  {
-    position: 16,
-    team: "Wolves",
-    pj: 28,
-    pg: 7,
-    pe: 10,
-    pp: 11,
-    gf: 31,
-    gc: 45,
-    gd: -14,
-    points: 31,
-    form: ["L", "D", "D", "W", "L"],
-  },
-  {
-    position: 17,
-    team: "Nott'm Forest",
-    pj: 28,
-    pg: 7,
-    pe: 8,
-    pp: 13,
-    gf: 30,
-    gc: 50,
-    gd: -20,
-    points: 29,
-    form: ["L", "L", "D", "W", "D"],
-  },
-  {
-    position: 18,
-    team: "Leicester",
-    pj: 28,
-    pg: 6,
-    pe: 6,
-    pp: 16,
-    gf: 28,
-    gc: 54,
-    gd: -26,
-    points: 24,
-    form: ["L", "L", "D", "L", "W"],
-  },
-  {
-    position: 19,
-    team: "Ipswich",
-    pj: 28,
-    pg: 4,
-    pe: 8,
-    pp: 16,
-    gf: 26,
-    gc: 58,
-    gd: -32,
-    points: 20,
-    form: ["D", "L", "L", "D", "L"],
-  },
-  {
-    position: 20,
-    team: "Southampton",
-    pj: 28,
-    pg: 3,
-    pe: 5,
-    pp: 20,
-    gf: 22,
-    gc: 62,
-    gd: -40,
-    points: 14,
-    form: ["L", "L", "L", "D", "L"],
-  },
-];
-
-const formBadge: Record<
-  FormResult,
-  { label: string; className: string }
+const formaBadge: Record<
+  FormaLetra,
+  { label: string; className: string; title: string }
 > = {
-  W: {
+  V: {
     label: "V",
     className: "bg-emerald-500/85 text-white",
+    title: "Victoria",
   },
-  D: {
+  E: {
     label: "E",
     className: "bg-white/35 text-white",
+    title: "Empate",
   },
-  L: {
+  P: {
     label: "D",
     className: "bg-rose-500/90 text-white",
+    title: "Derrota",
   },
 };
 
-export function PremierLeagueStandingsTable() {
+function StandingsTableBody({ rows }: { rows: FilaTabla[] }) {
   return (
-    <div className="overflow-x-auto rounded-2xl border border-white/[0.08] bg-[#1e0021]/35 shadow-[0_8px_32px_rgba(0,0,0,0.2)] backdrop-blur-[2px]">
-      <table className="w-full min-w-[920px] border-separate border-spacing-0 text-left text-sm text-white/95">
-        <thead>
-          <tr className="bg-[#1e0021] text-xs font-bold uppercase tracking-wide text-white/75 sm:text-sm">
-            <th
-              scope="col"
-              className="rounded-tl-2xl border-b border-white/[0.06] px-2 py-3.5 pl-4 text-center sm:px-3"
+    <tbody>
+      {rows.map((row, index) => {
+        const isLast = index === rows.length - 1;
+        return (
+          <tr
+            key={row.equipo_id}
+            className="bg-[#28002b] transition-colors hover:bg-[#37003c]"
+          >
+            <td
+              className={`px-2 py-2.5 text-center tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""} ${isLast ? "rounded-bl-2xl border-b border-transparent pl-4" : "pl-4"}`}
             >
-              Posición
-            </th>
-            <th
-              scope="col"
-              className="min-w-[10.5rem] border-b border-white/[0.06] px-2 py-3.5 sm:px-3"
+              {row.posicion}
+            </td>
+            <td
+              className={`px-2 py-2.5 sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
             >
               <div className="flex items-center gap-2.5">
                 <span
-                  className="size-7 shrink-0 sm:size-8"
+                  className="size-7 shrink-0 rounded-md border border-white/[0.12] bg-white/[0.06] sm:size-8"
                   aria-hidden
                 />
-                Equipo
+                <span className="font-medium">{row.equipo}</span>
               </div>
-            </th>
-            <th
-              scope="col"
-              className="border-b border-white/[0.06] px-2 py-3.5 text-center sm:px-3"
+            </td>
+            <td
+              className={`px-2 py-2.5 text-center tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
             >
-              PJ
-            </th>
-            <th
-              scope="col"
-              className="border-b border-white/[0.06] px-2 py-3.5 text-center sm:px-3"
+              {row.partidos_jugados}
+            </td>
+            <td
+              className={`px-2 py-2.5 text-center tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
             >
-              PG
-            </th>
-            <th
-              scope="col"
-              className="border-b border-white/[0.06] px-2 py-3.5 text-center sm:px-3"
+              {row.partidos_ganados}
+            </td>
+            <td
+              className={`px-2 py-2.5 text-center tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
             >
-              PE
-            </th>
-            <th
-              scope="col"
-              className="border-b border-white/[0.06] px-2 py-3.5 text-center sm:px-3"
+              {row.partidos_empatados}
+            </td>
+            <td
+              className={`px-2 py-2.5 text-center tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
             >
-              PP
-            </th>
-            <th
-              scope="col"
-              className="border-b border-white/[0.06] px-2 py-3.5 text-center sm:px-3"
+              {row.partidos_perdidos}
+            </td>
+            <td
+              className={`px-2 py-2.5 text-center tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
             >
-              GF
-            </th>
-            <th
-              scope="col"
-              className="border-b border-white/[0.06] px-2 py-3.5 text-center sm:px-3"
+              {row.goles_a_favor}
+            </td>
+            <td
+              className={`px-2 py-2.5 text-center tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
             >
-              GC
-            </th>
-            <th
-              scope="col"
-              className="border-b border-white/[0.06] px-2 py-3.5 text-center sm:px-3"
+              {row.goles_en_contra}
+            </td>
+            <td
+              className={`px-2 py-2.5 text-center tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
             >
-              GD
-            </th>
-            <th
-              scope="col"
-              className="border-b border-white/[0.06] px-2 py-3.5 text-center font-bold text-white/95 sm:px-3"
+              {row.diferencia_goles > 0
+                ? `+${row.diferencia_goles}`
+                : row.diferencia_goles}
+            </td>
+            <td
+              className={`px-2 py-2.5 text-center text-base font-bold tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
             >
-              Puntos
-            </th>
-            <th
-              scope="col"
-              className="rounded-tr-2xl border-b border-white/[0.06] px-2 py-3.5 pr-4 text-center sm:px-3"
+              {row.puntos}
+            </td>
+            <td
+              className={`px-2 py-2.5 pr-4 sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""} ${isLast ? "rounded-br-2xl border-b border-transparent" : ""}`}
             >
-              Forma
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {MOCK_STANDINGS.map((row, index) => {
-            const isLast = index === MOCK_STANDINGS.length - 1;
-            return (
-              <tr
-                key={row.team}
-                className="bg-[#28002b] transition-colors hover:bg-[#37003c]"
+              <div
+                className="flex justify-center gap-1"
+                aria-label={`Forma: ${row.forma.join(", ")}`}
               >
-                <td
-                  className={`px-2 py-2.5 text-center tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""} ${isLast ? "rounded-bl-2xl border-b border-transparent pl-4" : "pl-4"}`}
+                {row.forma.map((f, i) => (
+                  <span
+                    key={`${row.equipo_id}-f-${i}`}
+                    className={`flex size-6 items-center justify-center rounded-full text-[0.65rem] font-bold ${formaBadge[f].className}`}
+                    title={formaBadge[f].title}
+                  >
+                    {formaBadge[f].label}
+                  </span>
+                ))}
+              </div>
+            </td>
+          </tr>
+        );
+      })}
+    </tbody>
+  );
+}
+
+export function PremierLeagueStandingsTable() {
+  const [rows, setRows] = useState<FilaTabla[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setLoading(true);
+      setError(null);
+
+      const result = await fetchTablaStandings(
+        PREMIER_LEAGUE_COMPETITION_ID,
+        PREMIER_LEAGUE_SEASON_ID,
+      );
+
+      if (cancelled) return;
+
+      if (result.ok) {
+        setRows(result.data.tabla);
+        setError(null);
+      } else {
+        setRows(null);
+        const msg =
+          result.problem?.detail ??
+          result.problem?.title ??
+          (result.status === 404
+            ? "Temporada no encontrada"
+            : `Error al cargar la tabla (${result.status})`);
+        setError(msg);
+      }
+      setLoading(false);
+    }
+
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return (
+    <div className="space-y-4">
+      {loading && (
+        <p className="text-center text-sm text-white/70">Cargando tabla…</p>
+      )}
+      {!loading && error && (
+        <p
+          className="rounded-xl border border-rose-500/40 bg-rose-950/40 px-4 py-3 text-center text-sm text-rose-100"
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
+      {!loading && !error && rows && rows.length === 0 && (
+        <p className="text-center text-sm text-white/70">
+          Aún no hay partidos con resultado en esta temporada.
+        </p>
+      )}
+      {rows && rows.length > 0 && (
+        <div className="overflow-x-auto rounded-2xl border border-white/[0.08] bg-[#1e0021]/35 shadow-[0_8px_32px_rgba(0,0,0,0.2)] backdrop-blur-[2px]">
+          <table className="w-full min-w-[920px] border-separate border-spacing-0 text-left text-sm text-white/95">
+            <thead>
+              <tr className="bg-[#1e0021] text-xs font-bold uppercase tracking-wide text-white/75 sm:text-sm">
+                <th
+                  scope="col"
+                  className="rounded-tl-2xl border-b border-white/[0.06] px-2 py-3.5 pl-4 text-center sm:px-3"
                 >
-                  {row.position}
-                </td>
-                <td
-                  className={`px-2 py-2.5 sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
+                  Posición
+                </th>
+                <th
+                  scope="col"
+                  className="min-w-[10.5rem] border-b border-white/[0.06] px-2 py-3.5 sm:px-3"
                 >
                   <div className="flex items-center gap-2.5">
                     <span
-                      className="size-7 shrink-0 rounded-md border border-white/[0.12] bg-white/[0.06] sm:size-8"
+                      className="size-7 shrink-0 sm:size-8"
                       aria-hidden
                     />
-                    <span className="font-medium">{row.team}</span>
+                    Equipo
                   </div>
-                </td>
-                <td
-                  className={`px-2 py-2.5 text-center tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
+                </th>
+                <th
+                  scope="col"
+                  className="border-b border-white/[0.06] px-2 py-3.5 text-center sm:px-3"
                 >
-                  {row.pj}
-                </td>
-                <td
-                  className={`px-2 py-2.5 text-center tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
+                  PJ
+                </th>
+                <th
+                  scope="col"
+                  className="border-b border-white/[0.06] px-2 py-3.5 text-center sm:px-3"
                 >
-                  {row.pg}
-                </td>
-                <td
-                  className={`px-2 py-2.5 text-center tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
+                  PG
+                </th>
+                <th
+                  scope="col"
+                  className="border-b border-white/[0.06] px-2 py-3.5 text-center sm:px-3"
                 >
-                  {row.pe}
-                </td>
-                <td
-                  className={`px-2 py-2.5 text-center tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
+                  PE
+                </th>
+                <th
+                  scope="col"
+                  className="border-b border-white/[0.06] px-2 py-3.5 text-center sm:px-3"
                 >
-                  {row.pp}
-                </td>
-                <td
-                  className={`px-2 py-2.5 text-center tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
+                  PP
+                </th>
+                <th
+                  scope="col"
+                  className="border-b border-white/[0.06] px-2 py-3.5 text-center sm:px-3"
                 >
-                  {row.gf}
-                </td>
-                <td
-                  className={`px-2 py-2.5 text-center tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
+                  GF
+                </th>
+                <th
+                  scope="col"
+                  className="border-b border-white/[0.06] px-2 py-3.5 text-center sm:px-3"
                 >
-                  {row.gc}
-                </td>
-                <td
-                  className={`px-2 py-2.5 text-center tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
+                  GC
+                </th>
+                <th
+                  scope="col"
+                  className="border-b border-white/[0.06] px-2 py-3.5 text-center sm:px-3"
                 >
-                  {row.gd > 0 ? `+${row.gd}` : row.gd}
-                </td>
-                <td
-                  className={`px-2 py-2.5 text-center text-base font-bold tabular-nums sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
+                  GD
+                </th>
+                <th
+                  scope="col"
+                  className="border-b border-white/[0.06] px-2 py-3.5 text-center font-bold text-white/95 sm:px-3"
                 >
-                  {row.points}
-                </td>
-                <td
-                  className={`px-2 py-2.5 pr-4 sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""} ${isLast ? "rounded-br-2xl border-b border-transparent" : ""}`}
+                  Puntos
+                </th>
+                <th
+                  scope="col"
+                  className="rounded-tr-2xl border-b border-white/[0.06] px-2 py-3.5 pr-4 text-center sm:px-3"
                 >
-                  <div
-                    className="flex justify-center gap-1"
-                    aria-label={`Forma: ${row.form.join(", ")}`}
-                  >
-                    {row.form.map((f, i) => (
-                      <span
-                        key={`${row.team}-f-${i}`}
-                        className={`flex size-6 items-center justify-center rounded-full text-[0.65rem] font-bold ${formBadge[f].className}`}
-                        title={
-                          f === "W"
-                            ? "Victoria"
-                            : f === "D"
-                              ? "Empate"
-                              : "Derrota"
-                        }
-                      >
-                        {formBadge[f].label}
-                      </span>
-                    ))}
-                  </div>
-                </td>
+                  Forma
+                </th>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            </thead>
+            <StandingsTableBody rows={rows} />
+          </table>
+        </div>
+      )}
     </div>
   );
 }

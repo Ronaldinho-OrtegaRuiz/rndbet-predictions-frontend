@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 import { premierLeagueAccent } from "../constants/premierLeagueAccent";
+import {
+  resolveEventGlyphKind,
+  TimelineEventGlyph,
+} from "../icons/MatchEventSvgs";
+import { RedCardMarkersRow } from "../icons/RedCardMark";
 import type {
   MatchDetailMock,
   MatchEventMock,
@@ -26,7 +31,8 @@ function pct(n: number | null | undefined) {
 }
 
 function eventLabel(type: string | null) {
-  switch (type) {
+  const t = (type ?? "").toLowerCase();
+  switch (t) {
     case "goal":
       return "Gol";
     case "yellow_card":
@@ -44,75 +50,201 @@ function eventLabel(type: string | null) {
     case "fulltime":
       return "Final";
     default:
-      return type ?? "Evento";
+      return type?.trim() ? type : "Evento";
   }
+}
+
+function eventTypeKey(type: string | null): string {
+  return (type ?? "").trim().toLowerCase().replace(/\s+/g, "_");
+}
+
+function isRedCardEventType(type: string | null): boolean {
+  const t = eventTypeKey(type);
+  return (
+    t === "red_card" ||
+    t === "redcard" ||
+    t.endsWith("_red_card") ||
+    t.includes("red_card") ||
+    t.includes("tarjeta_roja")
+  );
+}
+
+function isNeutralTimelineEvent(ev: MatchEventMock): boolean {
+  const t = eventTypeKey(ev.event_type);
+  return (
+    t === "kickoff" ||
+    t === "halftime" ||
+    t === "fulltime" ||
+    t === "match_start" ||
+    t === "match_end"
+  );
+}
+
+function countRedCardsInEvents(events: MatchEventMock[], side: "home" | "away"): number {
+  return events.filter(
+    (e) => isRedCardEventType(e.event_type) && e.side === side,
+  ).length;
+}
+
+/** Rojas junto al escudo: si hay cifra en stats se usa; si no, se cuentan eventos red_card con `lado`. */
+function effectiveRedCards(
+  statsValue: number | null | undefined,
+  events: MatchEventMock[],
+  side: "home" | "away",
+): number {
+  const fromEvents = countRedCardsInEvents(events, side);
+  if (statsValue != null && statsValue > 0) {
+    return statsValue;
+  }
+  if (fromEvents > 0) {
+    return fromEvents;
+  }
+  return Math.max(0, statsValue ?? 0);
 }
 
 function formatExtra(extra: Record<string, unknown> | null, type: string | null) {
   if (!extra) return null;
-  if (type === "substitution") {
+  const t = (type ?? "").toLowerCase();
+  if (t === "substitution") {
     const off = extra.off;
     const on = extra.on;
     if (typeof off === "string" && typeof on === "string") return `${off} → ${on}`;
     return null;
   }
-  if (type === "goal" && typeof extra.assist === "string") {
+  if (t === "goal" && typeof extra.assist === "string") {
     return `Asistencia: ${extra.assist}`;
   }
-  if (type === "kickoff" && typeof extra.note === "string") return extra.note;
-  if (type === "fulltime" && typeof extra.score === "string") return `Marcador ${extra.score}`;
+  if (t === "kickoff" && typeof extra.note === "string") return extra.note;
+  if (t === "fulltime" && typeof extra.score === "string") return `Marcador ${extra.score}`;
   return null;
 }
 
-function Timeline({ events, homeTeam, awayTeam }: { events: MatchEventMock[]; homeTeam: string; awayTeam: string }) {
+const timelineScrollClass =
+  "min-h-0 max-h-[min(36rem,52svh)] flex-1 overflow-y-auto overscroll-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:max-h-[min(42rem,min(52svh,calc(100svh-13rem)))]";
+
+function Timeline({ events }: { events: MatchEventMock[] }) {
   const sorted = [...events].sort((a, b) => (a.minute ?? 0) - (b.minute ?? 0));
 
   if (sorted.length === 0) {
     return (
-      <div className="rounded-2xl border border-white/[0.08] bg-[#28002b]/80 p-4 text-sm text-white/55 sm:p-5">
-        No hay eventos en el mock para este partido. Con el back, aquí aparecerá la línea de tiempo desde{" "}
-        <code className="text-white/70">match_events</code>.
+      <div className="flex h-full min-h-0 w-full flex-col rounded-2xl border border-white/[0.08] bg-[#28002b]/80 p-4 sm:p-5">
+        <h3
+          className="mb-3 shrink-0 text-sm font-bold sm:text-base"
+          style={{ color: premierLeagueAccent }}
+        >
+          Eventos
+        </h3>
+        <div className={`${timelineScrollClass} text-sm text-white/55`}>
+          No hay eventos en el mock para este partido. Con el back, aquí aparecerá la línea de tiempo desde{" "}
+          <code className="text-white/70">match_events</code>.
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl border border-white/[0.08] bg-[#28002b]/80 p-4 sm:p-5">
-      <h3 className="mb-4 text-sm font-bold text-white/90 sm:text-base">Eventos</h3>
-      <div className="relative pl-8">
-        <span
-          className="absolute bottom-2 left-[0.65rem] top-2 w-px bg-white/[0.15]"
-          aria-hidden
-        />
-        <ul className="m-0 list-none p-0">
-        {sorted.map((ev) => {
-          const team = ev.side === "home" ? homeTeam : awayTeam;
-          const sub = formatExtra(ev.extra_data, ev.event_type);
-          return (
-            <li key={ev.id} className="relative pb-6 last:pb-0">
-              <span
-                className="absolute left-0 top-1.5 flex size-5 items-center justify-center rounded-full border-2 border-[#28002b] sm:top-2"
-                style={{
-                  backgroundColor: ev.side === "home" ? `${premierLeagueAccent}55` : "rgba(255,255,255,0.2)",
-                }}
-                aria-hidden
-              />
-              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                <span className="text-xs font-bold tabular-nums text-white/45 sm:text-sm">
-                  {ev.minute != null ? `${ev.minute}'` : "—"}
-                </span>
-                <span className="text-xs font-bold uppercase tracking-wide text-white/70 sm:text-sm">
-                  {eventLabel(ev.event_type)}
-                </span>
-                <span className="text-[11px] text-white/40 sm:text-xs">· {team}</span>
-              </div>
-              {ev.playerLabel ? (
-                <p className="mt-1 text-sm font-medium text-white/90">{ev.playerLabel}</p>
-              ) : null}
-              {sub ? <p className="mt-0.5 text-xs text-white/55">{sub}</p> : null}
-            </li>
-          );
-        })}
+    <div className="flex h-full min-h-0 w-full flex-col rounded-2xl border border-white/[0.08] bg-[#28002b]/80 p-4 sm:p-5">
+      <h3
+        className="mb-4 shrink-0 text-sm font-bold sm:text-base"
+        style={{ color: premierLeagueAccent }}
+      >
+        Eventos
+      </h3>
+      <div className={timelineScrollClass}>
+        <ul className="m-0 list-none divide-y divide-white/[0.06] p-0">
+          {sorted.map((ev) => {
+            const sub = formatExtra(ev.extra_data, ev.event_type);
+            const glyphKind = resolveEventGlyphKind(ev.event_type);
+            const showDedicatedIcon = glyphKind !== "dot";
+            const minuteStr = ev.minute != null ? `${ev.minute}'` : "—";
+            const minuteClass =
+              "text-[11px] font-bold tabular-nums sm:text-xs shrink-0";
+
+            const missingSide = ev.side !== "home" && ev.side !== "away";
+            if (isNeutralTimelineEvent(ev) || missingSide) {
+              return (
+                <li key={ev.id} className="py-4">
+                  <div className="flex flex-col items-center gap-1.5 text-center">
+                    <span className={minuteClass} style={{ color: premierLeagueAccent }}>
+                      {minuteStr}
+                    </span>
+                    {showDedicatedIcon ? (
+                      <span className="sr-only">{eventLabel(ev.event_type)}</span>
+                    ) : (
+                      <span className="text-xs font-bold uppercase tracking-wide text-white/75">
+                        {eventLabel(ev.event_type)}
+                      </span>
+                    )}
+                    <div className="flex items-center justify-center gap-2">
+                      <TimelineEventGlyph eventType={ev.event_type} side="neutral" size={22} />
+                      {ev.playerLabel ? (
+                        <p className="text-sm font-medium text-white/90">{ev.playerLabel}</p>
+                      ) : null}
+                    </div>
+                    {sub ? <p className="max-w-md text-xs text-white/55">{sub}</p> : null}
+                  </div>
+                </li>
+              );
+            }
+
+            const isHome = ev.side === "home";
+            const isAway = ev.side === "away";
+
+            return (
+              <li
+                key={ev.id}
+                className="grid grid-cols-[minmax(0,1fr)_2.75rem_minmax(0,1fr)] items-start gap-x-1 py-4 sm:grid-cols-[minmax(0,1fr)_3.25rem_minmax(0,1fr)] sm:gap-x-2"
+              >
+                <div className="min-w-0 flex justify-end">
+                  {isHome ? (
+                    <div className="flex max-w-full flex-col items-end gap-1 text-right">
+                      {!showDedicatedIcon ? (
+                        <span className="text-xs font-bold uppercase tracking-wide text-white/70">
+                          {eventLabel(ev.event_type)}
+                        </span>
+                      ) : (
+                        <span className="sr-only">{eventLabel(ev.event_type)}</span>
+                      )}
+                      <div className="flex items-center justify-end gap-2">
+                        {ev.playerLabel ? (
+                          <p className="text-sm font-medium text-white/90">{ev.playerLabel}</p>
+                        ) : null}
+                        <TimelineEventGlyph eventType={ev.event_type} side="home" size={20} />
+                      </div>
+                      {sub ? <p className="text-xs text-white/55">{sub}</p> : null}
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-col items-center justify-center pt-1">
+                  <span className={minuteClass} style={{ color: premierLeagueAccent }}>
+                    {minuteStr}
+                  </span>
+                </div>
+
+                <div className="min-w-0 flex justify-start">
+                  {isAway ? (
+                    <div className="flex max-w-full flex-col items-start gap-1 text-left">
+                      {!showDedicatedIcon ? (
+                        <span className="text-xs font-bold uppercase tracking-wide text-white/70">
+                          {eventLabel(ev.event_type)}
+                        </span>
+                      ) : (
+                        <span className="sr-only">{eventLabel(ev.event_type)}</span>
+                      )}
+                      <div className="flex items-center justify-start gap-2">
+                        <TimelineEventGlyph eventType={ev.event_type} side="away" size={20} />
+                        {ev.playerLabel ? (
+                          <p className="text-sm font-medium text-white/90">{ev.playerLabel}</p>
+                        ) : null}
+                      </div>
+                      {sub ? <p className="text-xs text-white/55">{sub}</p> : null}
+                    </div>
+                  ) : null}
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>
@@ -292,6 +424,9 @@ export function PremierLeagueMatchDetailView({ detail }: { detail: MatchDetailMo
   const [sideTab, setSideTab] = useState<SideTab>("stats");
   const { homeTeam, awayTeam, status, homeScore, awayScore, dateLabel, minute } = detail;
 
+  const homeReds = effectiveRedCards(detail.homeStats.red_cards, detail.events, "home");
+  const awayReds = effectiveRedCards(detail.awayStats.red_cards, detail.events, "away");
+
   const top =
     status === "live" ? (
       <div className="flex items-center justify-center gap-2 text-sm font-semibold sm:text-base">
@@ -312,7 +447,14 @@ export function PremierLeagueMatchDetailView({ detail }: { detail: MatchDetailMo
         <div className="mb-6 min-h-[1.5rem]">{top}</div>
         <div className="flex flex-wrap items-start justify-center gap-4 sm:gap-8 md:gap-12">
           <div className="flex min-w-0 flex-1 flex-col items-center gap-3">
-            <LogoSlot label={homeTeam} />
+            <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+              {homeReds > 0 ? (
+                <div className="flex shrink-0 items-center pt-0.5">
+                  <RedCardMarkersRow count={homeReds} size={15} className="justify-end sm:max-w-[6rem]" />
+                </div>
+              ) : null}
+              <LogoSlot label={homeTeam} />
+            </div>
             <p className="text-center text-sm font-bold text-white sm:text-base md:text-lg">{homeTeam}</p>
             <p className="text-4xl font-bold tabular-nums text-white sm:text-5xl">
               {showScore ? homeScore ?? "—" : "—"}
@@ -322,7 +464,14 @@ export function PremierLeagueMatchDetailView({ detail }: { detail: MatchDetailMo
             <span className="text-lg font-bold tracking-[0.2em] text-white/35 sm:text-xl">VS</span>
           </div>
           <div className="flex min-w-0 flex-1 flex-col items-center gap-3">
-            <LogoSlot label={awayTeam} />
+            <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+              <LogoSlot label={awayTeam} />
+              {awayReds > 0 ? (
+                <div className="flex shrink-0 items-center pt-0.5">
+                  <RedCardMarkersRow count={awayReds} size={15} className="justify-start sm:max-w-[6rem]" />
+                </div>
+              ) : null}
+            </div>
             <p className="text-center text-sm font-bold text-white sm:text-base md:text-lg">{awayTeam}</p>
             <p className="text-4xl font-bold tabular-nums text-white sm:text-5xl">
               {showScore ? awayScore ?? "—" : "—"}
@@ -331,13 +480,13 @@ export function PremierLeagueMatchDetailView({ detail }: { detail: MatchDetailMo
         </div>
       </article>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,280px)_1fr] lg:items-start">
-        <div className="order-2 lg:order-1">
-          <Timeline events={detail.events} homeTeam={homeTeam} awayTeam={awayTeam} />
+      <div className="grid min-h-0 gap-6 lg:grid-cols-2 lg:items-stretch">
+        <div className="order-2 flex h-full min-h-0 min-w-0 flex-col lg:order-1">
+          <Timeline events={detail.events} />
         </div>
 
-        <div className="order-1 min-w-0 lg:order-2">
-          <div className="rounded-2xl border border-white/[0.08] bg-[#28002b]/90 p-4 shadow-[0_6px_24px_rgba(0,0,0,0.18)] sm:p-6">
+        <div className="order-1 flex min-h-0 min-w-0 flex-col lg:order-2">
+          <div className="flex h-full min-h-0 flex-col rounded-2xl border border-white/[0.08] bg-[#28002b]/90 p-4 shadow-[0_6px_24px_rgba(0,0,0,0.18)] sm:p-6">
             <div className="mb-5 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
               <span className="mr-0 text-xs font-medium text-white/45 sm:mr-2 sm:text-sm">Ver:</span>
               <div className="inline-flex rounded-full border border-white/[0.12] bg-[#1e0021]/60 p-1">

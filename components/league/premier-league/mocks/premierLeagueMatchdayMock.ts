@@ -11,7 +11,10 @@ export type FixtureMatch = {
   dateLabel?: string;
   /** Minutos en vivo, ej. "67'" */
   minute?: string;
-  redCard?: "home" | "away";
+  /** Estado mostrado en la tarjeta (API / mock) */
+  estadoLabelEs?: string;
+  tarjetasRojasLocal?: number;
+  tarjetasRojasVisitante?: number;
 };
 
 export const PREMIER_FIXTURE_PAIRS: { home: string; away: string }[] = [
@@ -27,6 +30,12 @@ export const PREMIER_FIXTURE_PAIRS: { home: string; away: string }[] = [
   { home: "Ipswich", away: "Southampton" },
 ];
 
+function estadoLabelForStatus(s: FixtureStatus): string {
+  if (s === "finished") return "Finalizado";
+  if (s === "live") return "En vivo";
+  return "Programado";
+}
+
 function base(
   i: number,
   overrides: Partial<FixtureMatch> & { status: FixtureStatus },
@@ -36,6 +45,7 @@ function base(
     id: `m${i + 1}`,
     homeTeam: p.home,
     awayTeam: p.away,
+    estadoLabelEs: estadoLabelForStatus(overrides.status),
     ...overrides,
   };
 }
@@ -47,7 +57,8 @@ export const MATCHDAY_1: FixtureMatch[] = PREMIER_FIXTURE_PAIRS.map((_, i) =>
     dateLabel: "15 mar 2025",
     homeScore: [2, 1, 3, 0, 2, 1, 1, 2, 0, 1][i],
     awayScore: [1, 1, 2, 0, 2, 3, 1, 2, 0, 2][i],
-    redCard: i === 2 ? "away" : i === 6 ? "home" : undefined,
+    tarjetasRojasVisitante: i === 2 ? 1 : undefined,
+    tarjetasRojasLocal: i === 6 ? 1 : undefined,
   }),
 );
 
@@ -58,7 +69,8 @@ export const MATCHDAY_2: FixtureMatch[] = PREMIER_FIXTURE_PAIRS.map((_, i) =>
     minute: `${12 + i * 7}'`,
     homeScore: [1, 0, 2, 1, 1, 0, 0, 1, 0, 2][i],
     awayScore: [1, 0, 1, 1, 2, 1, 0, 1, 0, 1][i],
-    redCard: i === 1 ? "home" : i === 8 ? "away" : undefined,
+    tarjetasRojasLocal: i === 1 ? 1 : undefined,
+    tarjetasRojasVisitante: i === 8 ? 1 : undefined,
   }),
 );
 
@@ -67,7 +79,8 @@ export const MATCHDAY_3: FixtureMatch[] = PREMIER_FIXTURE_PAIRS.map((_, i) =>
   base(i, {
     status: "scheduled",
     dateLabel: "22 mar 2025",
-    redCard: i === 4 ? "away" : i === 9 ? "home" : undefined,
+    tarjetasRojasVisitante: i === 4 ? 1 : undefined,
+    tarjetasRojasLocal: i === 9 ? 1 : undefined,
   }),
 );
 

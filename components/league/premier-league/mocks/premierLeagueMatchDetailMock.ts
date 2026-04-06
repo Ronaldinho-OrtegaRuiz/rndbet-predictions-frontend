@@ -11,8 +11,8 @@ export type MatchEventMock = {
   event_type: string | null;
   extra_data: Record<string, unknown> | null;
   created_at: string | null;
-  /** Derivado UI */
-  side: "home" | "away";
+  /** Derivado UI; ausente si el API no envía `lado`. */
+  side?: "home" | "away";
   playerLabel: string | null;
 };
 
@@ -440,9 +440,51 @@ function buildGenericDetail(
   };
 }
 
+function seedFromSlug(slug: string): number {
+  let h = 0;
+  for (let i = 0; i < slug.length; i++) {
+    h = (h * 31 + slug.charCodeAt(i)) >>> 0;
+  }
+  return (h % 900) + 1;
+}
+
+/** Partido no listado en el mock de jornada (p. ej. datos reales del API): vista de detalle por defecto. */
+function buildUnknownPairDetail(
+  slug: string,
+  homeTeam: string,
+  awayTeam: string,
+): MatchDetailMock {
+  const seed = seedFromSlug(slug);
+  const { home, away } = statsFromScores(homeTeam, awayTeam, 0, 0, seed);
+  return {
+    slug,
+    homeTeam,
+    awayTeam,
+    status: "scheduled",
+    dateLabel: undefined,
+    events: [],
+    homeStats: { ...home, goals: 0 },
+    awayStats: { ...away, goals: 0 },
+    prediction: null,
+    evaluation: null,
+    statsFootnote:
+      "Vista de detalle genérica: cuando el backend exponga este partido, aquí irán estadísticas y resumen reales.",
+    predictionFootnote:
+      "Sin predicción en el cliente para este partido. Se conectará con el API cuando esté disponible.",
+  };
+}
+
 export function getMatchDetailBySlug(slug: string): MatchDetailMock | null {
   const parsed = tryParseMatchSlug(slug);
   if (!parsed) return null;
   if (slug === LIVERPOOL_ARSENAL_SLUG) return buildLiverpoolArsenalDetail();
-  return buildGenericDetail(slug, parsed.homeTeam, parsed.awayTeam, parsed.pairIndex);
+  if (parsed.pairIndex >= 0) {
+    return buildGenericDetail(
+      slug,
+      parsed.homeTeam,
+      parsed.awayTeam,
+      parsed.pairIndex,
+    );
+  }
+  return buildUnknownPairDetail(slug, parsed.homeTeam, parsed.awayTeam);
 }

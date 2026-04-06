@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { RemoteTeamLogo } from "../components/RemoteTeamLogo";
 import { premierLeagueAccent } from "../constants/premierLeagueAccent";
 import {
   resolveEventGlyphKind,
@@ -14,16 +15,6 @@ import type {
   PredictionRowMock,
   TeamMatchStatsMock,
 } from "../mocks/premierLeagueMatchDetailMock";
-
-function LogoSlot({ label }: { label: string }) {
-  return (
-    <span
-      className="flex size-14 shrink-0 items-center justify-center rounded-xl border border-white/[0.12] bg-white/[0.06] sm:size-16 md:size-[4.5rem]"
-      aria-hidden
-      title={label}
-    />
-  );
-}
 
 function pct(n: number | null | undefined) {
   if (n == null) return "—";
@@ -422,7 +413,17 @@ type SideTab = "stats" | "predictions";
 
 export function PremierLeagueMatchDetailView({ detail }: { detail: MatchDetailMock }) {
   const [sideTab, setSideTab] = useState<SideTab>("stats");
-  const { homeTeam, awayTeam, status, homeScore, awayScore, dateLabel, minute } = detail;
+  const {
+    homeTeam,
+    awayTeam,
+    status,
+    homeScore,
+    awayScore,
+    dateLabel,
+    minute,
+    logoUrlLocal,
+    logoUrlVisitante,
+  } = detail;
 
   const homeReds = effectiveRedCards(detail.homeStats.red_cards, detail.events, "home");
   const awayReds = effectiveRedCards(detail.awayStats.red_cards, detail.events, "away");
@@ -453,7 +454,11 @@ export function PremierLeagueMatchDetailView({ detail }: { detail: MatchDetailMo
                   <RedCardMarkersRow count={homeReds} size={15} className="justify-end sm:max-w-[6rem]" />
                 </div>
               ) : null}
-              <LogoSlot label={homeTeam} />
+              <RemoteTeamLogo
+                logoUrl={logoUrlLocal}
+                variant="detail"
+                label={homeTeam}
+              />
             </div>
             <p className="text-center text-sm font-bold text-white sm:text-base md:text-lg">{homeTeam}</p>
             <p className="text-4xl font-bold tabular-nums text-white sm:text-5xl">
@@ -465,7 +470,11 @@ export function PremierLeagueMatchDetailView({ detail }: { detail: MatchDetailMo
           </div>
           <div className="flex min-w-0 flex-1 flex-col items-center gap-3">
             <div className="flex items-center justify-center gap-1.5 sm:gap-2">
-              <LogoSlot label={awayTeam} />
+              <RemoteTeamLogo
+                logoUrl={logoUrlVisitante}
+                variant="detail"
+                label={awayTeam}
+              />
               {awayReds > 0 ? (
                 <div className="flex shrink-0 items-center pt-0.5">
                   <RedCardMarkersRow count={awayReds} size={15} className="justify-start sm:max-w-[6rem]" />

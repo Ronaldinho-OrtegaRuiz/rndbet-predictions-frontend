@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchTablaStandings } from "@/lib/api/fetch-standings";
 import type { FilaTabla, FormaLetra } from "@/lib/api/standings-types";
+import { RemoteTeamLogo } from "../components/RemoteTeamLogo";
 import {
   PREMIER_LEAGUE_COMPETITION_ID,
   PREMIER_LEAGUE_SEASON_ID,
@@ -48,9 +49,10 @@ function StandingsTableBody({ rows }: { rows: FilaTabla[] }) {
               className={`px-2 py-2.5 sm:px-3 sm:py-3 ${!isLast ? "border-b border-white/[0.04]" : ""}`}
             >
               <div className="flex items-center gap-2.5">
-                <span
-                  className="size-7 shrink-0 rounded-md border border-white/[0.12] bg-white/[0.06] sm:size-8"
-                  aria-hidden
+                <RemoteTeamLogo
+                  logoUrl={row.logo_url}
+                  variant="standings"
+                  label={row.equipo}
                 />
                 <span className="font-medium">{row.equipo}</span>
               </div>

@@ -96,6 +96,8 @@ export function mapPartidoApiToFixture(p: PartidoApi): FixtureMatch {
     id: String(p.id),
     homeTeam: p.equipo_local,
     awayTeam: p.equipo_visitante,
+    logoUrlLocal: p.logo_url_local,
+    logoUrlVisitante: p.logo_url_visitante,
     status,
     homeScore: gl ?? undefined,
     awayScore: gv ?? undefined,

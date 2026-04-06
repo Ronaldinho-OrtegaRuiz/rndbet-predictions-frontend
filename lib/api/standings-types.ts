@@ -4,6 +4,8 @@ export type FilaTabla = {
   posicion: number;
   equipo_id: number;
   equipo: string;
+  /** Omitido por Jackson si es null en BD. */
+  logo_url?: string;
   partidos_jugados: number;
   partidos_ganados: number;
   partidos_empatados: number;

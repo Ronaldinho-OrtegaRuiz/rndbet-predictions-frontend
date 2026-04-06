@@ -17,6 +17,9 @@ export type MatchDetailApiResponse = {
   estado: string;
   equipo_local: string;
   equipo_visitante: string;
+  /** Omitidos si null (NON_NULL). */
+  logo_url_local?: string;
+  logo_url_visitante?: string;
   goles_local?: number | null;
   goles_visitante?: number | null;
   estadisticas_local?: EstadisticasEquipoApi | null;

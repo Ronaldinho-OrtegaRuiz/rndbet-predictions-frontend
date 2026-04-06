@@ -98,6 +98,8 @@ export function mapMatchDetailApiToMock(
     slug: routeKey,
     homeTeam: data.equipo_local,
     awayTeam: data.equipo_visitante,
+    logoUrlLocal: data.logo_url_local,
+    logoUrlVisitante: data.logo_url_visitante,
     status,
     homeScore: homeGoals ?? undefined,
     awayScore: awayGoals ?? undefined,

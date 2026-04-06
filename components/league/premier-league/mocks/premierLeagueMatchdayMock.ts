@@ -4,6 +4,8 @@ export type FixtureMatch = {
   id: string;
   homeTeam: string;
   awayTeam: string;
+  logoUrlLocal?: string;
+  logoUrlVisitante?: string;
   status: FixtureStatus;
   homeScore?: number;
   awayScore?: number;

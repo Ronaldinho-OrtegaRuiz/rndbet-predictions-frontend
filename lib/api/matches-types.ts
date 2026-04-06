@@ -5,6 +5,9 @@ export type PartidoApi = {
   estado: string;
   equipo_local: string;
   equipo_visitante: string;
+  /** Omitidos si null. */
+  logo_url_local?: string;
+  logo_url_visitante?: string;
   goles_local?: number | null;
   goles_visitante?: number | null;
   tarjetas_rojas_local?: number | null;

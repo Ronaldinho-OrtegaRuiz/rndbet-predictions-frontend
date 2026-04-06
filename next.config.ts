@@ -1,3 +1,4 @@
+import path from "path";
 import type { NextConfig } from "next";
 
 const backendBase = (
@@ -5,6 +6,22 @@ const backendBase = (
 ).replace(/\/$/, "");
 
 const nextConfig: NextConfig = {
+  // Evita que Next use un package-lock.json del directorio padre (p. ej. C:\Users\...) como raíz.
+  outputFileTracingRoot: path.join(__dirname),
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "imagecache.365scores.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.prod.website-files.com",
+        pathname: "/**",
+      },
+    ],
+  },
   async rewrites() {
     return [
       {

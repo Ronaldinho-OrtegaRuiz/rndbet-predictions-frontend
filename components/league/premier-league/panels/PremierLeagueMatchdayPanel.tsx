@@ -14,30 +14,27 @@ import {
   PREMIER_LEAGUE_SEASON_ID,
 } from "../constants/premierLeagueStandingsIds";
 import { RedCardMarkersRow } from "../icons/RedCardMark";
+import { RemoteTeamLogo } from "../components/RemoteTeamLogo";
 import { mapPartidoApiToFixture } from "../lib/mapPartidoApi";
 import type { FixtureMatch } from "../mocks/premierLeagueMatchdayMock";
-
-function LogoSlot({ label }: { label: string }) {
-  return (
-    <span
-      className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-white/[0.12] bg-white/[0.06] sm:size-12"
-      aria-hidden
-      title={label}
-    />
-  );
-}
 
 /** Solo escudo + nombre: ancho fijo alineado al logo (sin rojas aquí). */
 function TeamShieldColumn({
   teamName,
   logoTitle,
+  logoUrl,
 }: {
   teamName: string;
   logoTitle: string;
+  logoUrl?: string | null;
 }) {
   return (
     <div className="flex w-11 shrink-0 flex-col items-center gap-1.5 sm:w-12">
-      <LogoSlot label={logoTitle} />
+      <RemoteTeamLogo
+        logoUrl={logoUrl}
+        variant="fixture"
+        label={logoTitle}
+      />
       <p className="w-full text-center text-[11px] font-medium leading-snug text-white/55 sm:text-xs">
         {teamName}
       </p>
@@ -53,11 +50,13 @@ function HomeSideBlock({
   homeScore,
   status,
   tarjetasRojasLocal = 0,
+  homeLogoUrl,
 }: {
   homeTeam: string;
   homeScore?: number;
   status: FixtureMatch["status"];
   tarjetasRojasLocal?: number;
+  homeLogoUrl?: string | null;
 }) {
   const showScore = status !== "scheduled";
   return (
@@ -68,7 +67,11 @@ function HomeSideBlock({
             <RedCardMarkersRow count={tarjetasRojasLocal} size={13} />
           </div>
         ) : null}
-        <TeamShieldColumn teamName={homeTeam} logoTitle={homeTeam} />
+        <TeamShieldColumn
+          teamName={homeTeam}
+          logoTitle={homeTeam}
+          logoUrl={homeLogoUrl}
+        />
         <div className={scoreBoxClass}>{showScore ? homeScore : null}</div>
       </div>
     </div>
@@ -80,18 +83,24 @@ function AwaySideBlock({
   awayScore,
   status,
   tarjetasRojasVisitante = 0,
+  awayLogoUrl,
 }: {
   awayTeam: string;
   awayScore?: number;
   status: FixtureMatch["status"];
   tarjetasRojasVisitante?: number;
+  awayLogoUrl?: string | null;
 }) {
   const showScore = status !== "scheduled";
   return (
     <div className="inline-flex flex-col items-start">
       <div className="flex items-start gap-1.5 sm:gap-2">
         <div className={scoreBoxClass}>{showScore ? awayScore : null}</div>
-        <TeamShieldColumn teamName={awayTeam} logoTitle={awayTeam} />
+        <TeamShieldColumn
+          teamName={awayTeam}
+          logoTitle={awayTeam}
+          logoUrl={awayLogoUrl}
+        />
         {tarjetasRojasVisitante > 0 ? (
           <div className="flex shrink-0 items-center self-start pt-1 sm:pt-1.5">
             <RedCardMarkersRow count={tarjetasRojasVisitante} size={13} />
@@ -120,6 +129,8 @@ function FixtureCard({ match, round }: { match: FixtureMatch; round: number }) {
     estadoLabelEs,
     tarjetasRojasLocal,
     tarjetasRojasVisitante,
+    logoUrlLocal,
+    logoUrlVisitante,
   } = match;
 
   const estadoTexto =
@@ -159,6 +170,7 @@ function FixtureCard({ match, round }: { match: FixtureMatch; round: number }) {
             homeScore={homeScore}
             status={status}
             tarjetasRojasLocal={tarjetasRojasLocal ?? 0}
+            homeLogoUrl={logoUrlLocal}
           />
         </div>
 
@@ -174,6 +186,7 @@ function FixtureCard({ match, round }: { match: FixtureMatch; round: number }) {
             awayScore={awayScore}
             status={status}
             tarjetasRojasVisitante={tarjetasRojasVisitante ?? 0}
+            awayLogoUrl={logoUrlVisitante}
           />
         </div>
       </div>

@@ -1,5 +1,6 @@
 import type { PartidoApi, RoundMatchesResponse } from "./matches-types";
 import type { ProblemDetails } from "./standings-types";
+import { clientApiFetch } from "./client-fetch";
 import { parseProblemDetails } from "./parse-problem-details";
 
 function currentRoundPath(competitionId: number, seasonId: number): string {
@@ -54,9 +55,18 @@ export async function fetchCurrentRoundMatches(
   competitionId: number,
   seasonId: number,
 ): Promise<FetchRoundMatchesResult> {
-  const res = await fetch(currentRoundPath(competitionId, seasonId), {
-    cache: "no-store",
-  });
+  let res: Response;
+  try {
+    res = await clientApiFetch(currentRoundPath(competitionId, seasonId), {
+      cache: "no-store",
+    });
+  } catch {
+    return {
+      ok: false,
+      status: 401,
+      problem: { detail: "Sesión cerrada o expirada" },
+    };
+  }
 
   if (!res.ok) {
     const problem = await parseProblemDetails(res);
@@ -80,9 +90,18 @@ export async function fetchRoundMatches(
   seasonId: number,
   round: number,
 ): Promise<FetchRoundMatchesResult> {
-  const res = await fetch(roundPath(competitionId, seasonId, round), {
-    cache: "no-store",
-  });
+  let res: Response;
+  try {
+    res = await clientApiFetch(roundPath(competitionId, seasonId, round), {
+      cache: "no-store",
+    });
+  } catch {
+    return {
+      ok: false,
+      status: 401,
+      problem: { detail: "Sesión cerrada o expirada" },
+    };
+  }
 
   if (!res.ok) {
     const problem = await parseProblemDetails(res);

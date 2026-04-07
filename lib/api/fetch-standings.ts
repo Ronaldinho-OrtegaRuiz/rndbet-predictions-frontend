@@ -1,4 +1,5 @@
 import type { ProblemDetails, TablaResponse } from "./standings-types";
+import { clientApiFetch } from "./client-fetch";
 import { parseProblemDetails } from "./parse-problem-details";
 
 function standingsPath(competitionId: number, seasonId: number): string {
@@ -16,9 +17,18 @@ export async function fetchTablaStandings(
   competitionId: number,
   seasonId: number,
 ): Promise<FetchTablaResult> {
-  const res = await fetch(standingsPath(competitionId, seasonId), {
-    cache: "no-store",
-  });
+  let res: Response;
+  try {
+    res = await clientApiFetch(standingsPath(competitionId, seasonId), {
+      cache: "no-store",
+    });
+  } catch {
+    return {
+      ok: false,
+      status: 401,
+      problem: { detail: "Sesión cerrada o expirada" },
+    };
+  }
 
   if (res.ok) {
     const data: unknown = await res.json();

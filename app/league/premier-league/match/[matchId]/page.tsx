@@ -7,7 +7,7 @@ import { PREMIER_LEAGUE_COMPETITION_ID, PREMIER_LEAGUE_SEASON_ID } from "@/compo
 import { mapMatchDetailApiToMock } from "@/components/league/premier-league/lib/mapMatchDetailApi";
 import { fetchMatchDetailFromBackend } from "@/lib/api/fetch-match-detail";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 type Props = {
   params: Promise<{ matchId: string }>;
@@ -66,6 +66,10 @@ export default async function PremierLeagueMatchPage({ params, searchParams }: P
       Number(matchId),
     );
     if (!result.ok) {
+      if (result.status === 401 || result.status === 403) {
+        const nextPath = `/league/premier-league/match/${matchId}?round=${round}`;
+        redirect(`/login?next=${encodeURIComponent(nextPath)}`);
+      }
       notFound();
     }
     const detail = mapMatchDetailApiToMock(result.data, matchId);

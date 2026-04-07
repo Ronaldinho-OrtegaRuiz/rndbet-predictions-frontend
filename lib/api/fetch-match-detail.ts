@@ -1,3 +1,4 @@
+import { getServerAuthHeaders } from "@/lib/auth/server-auth";
 import { headers } from "next/headers";
 import type { FetchMatchDetailResult, MatchDetailApiResponse } from "./match-detail-types";
 import { parseProblemDetails } from "./parse-problem-details";
@@ -54,7 +55,8 @@ export async function fetchMatchDetailFromBackend(
   matchId: number,
 ): Promise<FetchMatchDetailResult> {
   const url = await matchDetailRequestUrl(competitionId, seasonId, round, matchId);
-  const res = await fetch(url, { cache: "no-store" });
+  const auth = await getServerAuthHeaders();
+  const res = await fetch(url, { cache: "no-store", headers: auth });
 
   if (!res.ok) {
     const problem = await parseProblemDetails(res);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { DesiredStatsModalTrigger } from "@/components/match/DesiredStatsModalTrigger";
 import {
   LIGUE1_BG_DEEP,
   LIGUE1_BG_SURFACE,
@@ -412,6 +413,15 @@ export function Ligue1MatchDetailView({ detail }: { detail: MatchDetailMock }) {
                   Predicciones
                 </button>
               </div>
+              {sideTab === "stats" ? (
+                <DesiredStatsModalTrigger
+                  league="ligue-1"
+                  homeTeam={homeTeam}
+                  awayTeam={awayTeam}
+                  accentBackground={ligue1AccentBlue}
+                  accentForeground="#ffffff"
+                />
+              ) : null}
             </div>
 
             {sideTab === "stats" ? (

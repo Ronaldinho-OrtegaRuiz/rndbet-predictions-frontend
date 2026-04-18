@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { DesiredStatsModalTrigger } from "@/components/match/DesiredStatsModalTrigger";
 import {
   UEL_BG_DEEP,
   UEL_BG_SURFACE,
@@ -412,6 +413,15 @@ export function EuropaLeagueMatchDetailView({ detail }: { detail: MatchDetailMoc
                   Predicciones
                 </button>
               </div>
+              {sideTab === "stats" ? (
+                <DesiredStatsModalTrigger
+                  league="europa-league"
+                  homeTeam={homeTeam}
+                  awayTeam={awayTeam}
+                  accentBackground={uelAccentOrange}
+                  accentForeground="#ffffff"
+                />
+              ) : null}
             </div>
 
             {sideTab === "stats" ? (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { DesiredStatsModalTrigger } from "@/components/match/DesiredStatsModalTrigger";
 import { RemoteTeamLogo } from "../components/RemoteTeamLogo";
 import { premierLeagueAccent } from "../constants/premierLeagueAccent";
 import {
@@ -8,6 +9,7 @@ import {
   TimelineEventGlyph,
 } from "../icons/MatchEventSvgs";
 import { RedCardMarkersRow } from "../icons/RedCardMark";
+import type { StatTargetsApiContext } from "@/lib/api/stat-targets-types";
 import type {
   MatchDetailMock,
   MatchEventMock,
@@ -411,7 +413,13 @@ function PredictionBlock({
 
 type SideTab = "stats" | "predictions";
 
-export function PremierLeagueMatchDetailView({ detail }: { detail: MatchDetailMock }) {
+export function PremierLeagueMatchDetailView({
+  detail,
+  statTargetsApi,
+}: {
+  detail: MatchDetailMock;
+  statTargetsApi?: StatTargetsApiContext | null;
+}) {
   const [sideTab, setSideTab] = useState<SideTab>("stats");
   const {
     homeTeam,
@@ -532,6 +540,16 @@ export function PremierLeagueMatchDetailView({ detail }: { detail: MatchDetailMo
                   Predicciones
                 </button>
               </div>
+              {sideTab === "stats" ? (
+                <DesiredStatsModalTrigger
+                  league="premier-league"
+                  homeTeam={homeTeam}
+                  awayTeam={awayTeam}
+                  accentBackground={premierLeagueAccent}
+                  accentForeground="#1e0021"
+                  statTargetsApi={statTargetsApi ?? undefined}
+                />
+              ) : null}
             </div>
 
             {sideTab === "stats" ? (

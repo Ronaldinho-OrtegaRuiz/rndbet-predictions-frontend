@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { DesiredStatsModalTrigger } from "@/components/match/DesiredStatsModalTrigger";
 import {
   UCL_BG_DEEP,
   UCL_BG_SURFACE,
@@ -412,6 +413,15 @@ export function ChampionsLeagueMatchDetailView({ detail }: { detail: MatchDetail
                   Predicciones
                 </button>
               </div>
+              {sideTab === "stats" ? (
+                <DesiredStatsModalTrigger
+                  league="champions-league"
+                  homeTeam={homeTeam}
+                  awayTeam={awayTeam}
+                  accentBackground={uclAccentBlue}
+                  accentForeground="#ffffff"
+                />
+              ) : null}
             </div>
 
             {sideTab === "stats" ? (

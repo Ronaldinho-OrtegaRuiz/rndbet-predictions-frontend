@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { DesiredStatsModalTrigger } from "@/components/match/DesiredStatsModalTrigger";
 import { bundesligaAccent } from "../constants/bundesligaTheme";
 import type {
   MatchDetailMock,
@@ -375,6 +376,15 @@ export function BundesligaMatchDetailView({ detail }: { detail: MatchDetailMock 
                   Predicciones
                 </button>
               </div>
+              {sideTab === "stats" ? (
+                <DesiredStatsModalTrigger
+                  league="bundesliga"
+                  homeTeam={homeTeam}
+                  awayTeam={awayTeam}
+                  accentBackground={bundesligaAccent}
+                  accentForeground="#ffffff"
+                />
+              ) : null}
             </div>
 
             {sideTab === "stats" ? (

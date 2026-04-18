@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { DesiredStatsModalTrigger } from "@/components/match/DesiredStatsModalTrigger";
 import { laLigaAccent } from "../constants/laLigaAccent";
 import type {
   MatchDetailMock,
@@ -375,6 +376,15 @@ export function LaLigaMatchDetailView({ detail }: { detail: MatchDetailMock }) {
                   Predicciones
                 </button>
               </div>
+              {sideTab === "stats" ? (
+                <DesiredStatsModalTrigger
+                  league="la-liga"
+                  homeTeam={homeTeam}
+                  awayTeam={awayTeam}
+                  accentBackground={laLigaAccent}
+                  accentForeground="#ffffff"
+                />
+              ) : null}
             </div>
 
             {sideTab === "stats" ? (

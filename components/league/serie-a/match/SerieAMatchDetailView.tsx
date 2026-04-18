@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { DesiredStatsModalTrigger } from "@/components/match/DesiredStatsModalTrigger";
 import { serieAAccent, serieAOnAccent } from "../constants/serieAAccents";
 import type {
   MatchDetailMock,
@@ -374,6 +375,15 @@ export function SerieAMatchDetailView({ detail }: { detail: MatchDetailMock }) {
                   Predicciones
                 </button>
               </div>
+              {sideTab === "stats" ? (
+                <DesiredStatsModalTrigger
+                  league="serie-a"
+                  homeTeam={homeTeam}
+                  awayTeam={awayTeam}
+                  accentBackground={serieAAccent}
+                  accentForeground={serieAOnAccent}
+                />
+              ) : null}
             </div>
 
             {sideTab === "stats" ? (

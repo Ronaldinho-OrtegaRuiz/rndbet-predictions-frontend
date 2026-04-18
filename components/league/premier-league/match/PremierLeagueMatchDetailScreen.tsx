@@ -3,6 +3,7 @@
 import Link from "next/link";
 import eplLogo from "@/svgs/competitions/england_english-premier-league.football-logos.cc.svg";
 import { premierLeagueAccent } from "../constants/premierLeagueAccent";
+import type { StatTargetsApiContext } from "@/lib/api/stat-targets-types";
 import type { MatchDetailMock } from "../mocks/premierLeagueMatchDetailMock";
 import { PremierLeagueMatchDetailView } from "./PremierLeagueMatchDetailView";
 
@@ -22,7 +23,13 @@ function BackArrowIcon({ className }: { className?: string }) {
   );
 }
 
-export function PremierLeagueMatchDetailScreen({ detail }: { detail: MatchDetailMock }) {
+export function PremierLeagueMatchDetailScreen({
+  detail,
+  statTargetsApi,
+}: {
+  detail: MatchDetailMock;
+  statTargetsApi?: StatTargetsApiContext | null;
+}) {
   return (
     <div className="min-h-screen bg-[#1e0021] text-white">
       <header className="sticky top-0 z-10 border-b border-white/10 bg-[#1e0021]">
@@ -58,7 +65,7 @@ export function PremierLeagueMatchDetailScreen({ detail }: { detail: MatchDetail
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-8">
-        <PremierLeagueMatchDetailView detail={detail} />
+        <PremierLeagueMatchDetailView detail={detail} statTargetsApi={statTargetsApi} />
       </main>
     </div>
   );

@@ -73,7 +73,17 @@ export default async function PremierLeagueMatchPage({ params, searchParams }: P
       notFound();
     }
     const detail = mapMatchDetailApiToMock(result.data, matchId);
-    return <PremierLeagueMatchDetailScreen detail={detail} />;
+    return (
+      <PremierLeagueMatchDetailScreen
+        detail={detail}
+        statTargetsApi={{
+          competitionId: PREMIER_LEAGUE_COMPETITION_ID,
+          seasonId: PREMIER_LEAGUE_SEASON_ID,
+          round,
+          matchId: Number(matchId),
+        }}
+      />
+    );
   }
 
   const detail = getMatchDetailBySlug(matchId);

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { fetchTablaStandings } from "@/lib/api/fetch-standings";
 import type { FilaTabla, FormaLetra } from "@/lib/api/standings-types";
+import { isClientSessionValid } from "@/lib/auth/client-session";
+import { RNDBET_SESSION_READY_EVENT } from "@/lib/auth/constants";
 import { RemoteTeamLogo } from "../components/RemoteTeamLogo";
 import {
   PREMIER_LEAGUE_COMPETITION_ID,
@@ -133,6 +135,14 @@ export function PremierLeagueStandingsTable() {
     let cancelled = false;
 
     async function load() {
+      if (!isClientSessionValid()) {
+        const returnTo = window.location.pathname + window.location.search;
+        window.location.assign(
+          `/login?next=${encodeURIComponent(returnTo)}`,
+        );
+        return;
+      }
+
       setLoading(true);
       setError(null);
 
@@ -153,15 +163,24 @@ export function PremierLeagueStandingsTable() {
           result.problem?.title ??
           (result.status === 404
             ? "Temporada no encontrada"
-            : `Error al cargar la tabla (${result.status})`);
+            : result.status === 401
+              ? "Sesión expirada. Inicia sesión de nuevo."
+              : `Error al cargar la tabla (${result.status})`);
         setError(msg);
       }
       setLoading(false);
     }
 
     void load();
+
+    function onSessionReady() {
+      if (!cancelled) void load();
+    }
+    window.addEventListener(RNDBET_SESSION_READY_EVENT, onSessionReady);
+
     return () => {
       cancelled = true;
+      window.removeEventListener(RNDBET_SESSION_READY_EVENT, onSessionReady);
     };
   }, []);
 

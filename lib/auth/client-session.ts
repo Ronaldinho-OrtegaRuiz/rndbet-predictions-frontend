@@ -2,6 +2,7 @@ import {
   RNDBET_ACCESS_COOKIE,
   RNDBET_ACCESS_TOKEN_KEY,
   RNDBET_EXPIRES_AT_MS_KEY,
+  RNDBET_SESSION_READY_EVENT,
 } from "./constants";
 
 export function getClientAccessToken(): string | null {
@@ -17,6 +18,15 @@ export function getClientExpiresAtMs(): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+/** Token presente y no vencido según `rndbet_tokenExpiresAtMs`. */
+export function isClientSessionValid(): boolean {
+  const token = getClientAccessToken();
+  if (!token?.trim()) return false;
+  const exp = getClientExpiresAtMs();
+  if (exp != null && Date.now() >= exp) return false;
+  return true;
+}
+
 export function persistClientSession(
   accessToken: string,
   expiresInSeconds: number,
@@ -26,6 +36,7 @@ export function persistClientSession(
   localStorage.setItem(RNDBET_ACCESS_TOKEN_KEY, accessToken);
   localStorage.setItem(RNDBET_EXPIRES_AT_MS_KEY, String(expiresAtMs));
   setAccessCookie(accessToken, expiresInSeconds);
+  window.dispatchEvent(new CustomEvent(RNDBET_SESSION_READY_EVENT));
 }
 
 export function clearClientSession(): void {

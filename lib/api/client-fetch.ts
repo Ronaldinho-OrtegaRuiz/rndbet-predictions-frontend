@@ -1,7 +1,7 @@
 import {
   clearClientSession,
   getClientAccessToken,
-  getClientExpiresAtMs,
+  isClientSessionValid,
 } from "@/lib/auth/client-session";
 import { RNDBET_SESSION_ENDED_EVENT } from "@/lib/auth/constants";
 
@@ -37,17 +37,14 @@ export function clientApiFetch(
     );
   }
 
-  const exp = getClientExpiresAtMs();
-  if (exp != null && Date.now() >= exp) {
+  if (!isClientSessionValid()) {
     onUnauthorizedOrForbidden();
-    return Promise.reject(new Error("Sesión vencida"));
+    return Promise.reject(new Error("Sin sesión válida"));
   }
 
-  const token = getClientAccessToken();
+  const token = getClientAccessToken()!;
   const headers = new Headers(init?.headers);
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
-  }
+  headers.set("Authorization", `Bearer ${token}`);
   if (
     !headers.has("Content-Type") &&
     init?.body != null &&

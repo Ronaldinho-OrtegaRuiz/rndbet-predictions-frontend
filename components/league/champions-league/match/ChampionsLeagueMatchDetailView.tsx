@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { DesiredStatsModalTrigger } from "@/components/match/DesiredStatsModalTrigger";
+import type { StatTargetsApiContext } from "@/lib/api/stat-targets-types";
 import {
   UCL_BG_DEEP,
   UCL_BG_SURFACE,
@@ -317,7 +318,13 @@ function PredictionBlock({
 
 type SideTab = "stats" | "predictions";
 
-export function ChampionsLeagueMatchDetailView({ detail }: { detail: MatchDetailMock }) {
+export function ChampionsLeagueMatchDetailView({
+  detail,
+  statTargetsApi,
+}: {
+  detail: MatchDetailMock;
+  statTargetsApi?: StatTargetsApiContext | null;
+}) {
   const [sideTab, setSideTab] = useState<SideTab>("stats");
   const { homeTeam, awayTeam, status, homeScore, awayScore, dateLabel, minute } = detail;
 
@@ -420,6 +427,7 @@ export function ChampionsLeagueMatchDetailView({ detail }: { detail: MatchDetail
                   awayTeam={awayTeam}
                   accentBackground={uclAccentBlue}
                   accentForeground="#ffffff"
+                  statTargetsApi={statTargetsApi ?? undefined}
                 />
               ) : null}
             </div>

@@ -9,6 +9,7 @@ import {
   LIGUE1_NAVY,
   ligue1AccentBlue,
 } from "../constants/ligue1Theme";
+import type { StatTargetsApiContext } from "@/lib/api/stat-targets-types";
 import type { MatchDetailMock } from "../mocks/ligue1MatchDetailMock";
 import { Ligue1MatchDetailView } from "./Ligue1MatchDetailView";
 
@@ -28,7 +29,13 @@ function BackArrowIcon({ className }: { className?: string }) {
   );
 }
 
-export function Ligue1MatchDetailScreen({ detail }: { detail: MatchDetailMock }) {
+export function Ligue1MatchDetailScreen({
+  detail,
+  statTargetsApi,
+}: {
+  detail: MatchDetailMock;
+  statTargetsApi?: StatTargetsApiContext | null;
+}) {
   return (
     <div className="min-h-screen text-white" style={{ backgroundColor: LIGUE1_BG_DEEP }}>
       <header
@@ -74,7 +81,7 @@ export function Ligue1MatchDetailScreen({ detail }: { detail: MatchDetailMock })
 
       <main className="text-slate-200" style={{ backgroundColor: LIGUE1_BG_DEEP }}>
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-8">
-          <Ligue1MatchDetailView detail={detail} />
+          <Ligue1MatchDetailView detail={detail} statTargetsApi={statTargetsApi} />
         </div>
       </main>
     </div>

@@ -9,6 +9,7 @@ import {
   uclAccentBlue,
   uclAccentCyan,
 } from "../constants/uclTheme";
+import type { StatTargetsApiContext } from "@/lib/api/stat-targets-types";
 import type { MatchDetailMock } from "../mocks/uclMatchDetailMock";
 import { ChampionsLeagueMatchDetailView } from "./ChampionsLeagueMatchDetailView";
 
@@ -28,7 +29,13 @@ function BackArrowIcon({ className }: { className?: string }) {
   );
 }
 
-export function ChampionsLeagueMatchDetailScreen({ detail }: { detail: MatchDetailMock }) {
+export function ChampionsLeagueMatchDetailScreen({
+  detail,
+  statTargetsApi,
+}: {
+  detail: MatchDetailMock;
+  statTargetsApi?: StatTargetsApiContext | null;
+}) {
   return (
     <div className="min-h-screen text-[#f1f3f8]" style={{ backgroundColor: UCL_BG_DEEP }}>
       <header
@@ -74,7 +81,7 @@ export function ChampionsLeagueMatchDetailScreen({ detail }: { detail: MatchDeta
 
       <main style={{ backgroundColor: UCL_BG_DEEP }}>
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-8">
-          <ChampionsLeagueMatchDetailView detail={detail} />
+          <ChampionsLeagueMatchDetailView detail={detail} statTargetsApi={statTargetsApi} />
         </div>
       </main>
     </div>

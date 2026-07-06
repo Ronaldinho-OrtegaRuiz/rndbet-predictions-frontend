@@ -20,6 +20,11 @@ const nextConfig: NextConfig = {
         hostname: "cdn.prod.website-files.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "crests.football-data.org",
+        pathname: "/**",
+      },
     ],
   },
   async rewrites() {

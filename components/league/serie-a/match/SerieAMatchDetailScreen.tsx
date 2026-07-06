@@ -3,6 +3,7 @@
 import Link from "next/link";
 import serieALogo from "@/svgs/competitions/italy_serie-a-on-dark.svg";
 import { serieAAccent } from "../constants/serieAAccents";
+import type { StatTargetsApiContext } from "@/lib/api/stat-targets-types";
 import type { MatchDetailMock } from "../mocks/serieAMatchDetailMock";
 import { SerieAMatchDetailView } from "./SerieAMatchDetailView";
 
@@ -22,7 +23,13 @@ function BackArrowIcon({ className }: { className?: string }) {
   );
 }
 
-export function SerieAMatchDetailScreen({ detail }: { detail: MatchDetailMock }) {
+export function SerieAMatchDetailScreen({
+  detail,
+  statTargetsApi,
+}: {
+  detail: MatchDetailMock;
+  statTargetsApi?: StatTargetsApiContext | null;
+}) {
   return (
     <div className="min-h-screen bg-[#0f2440] text-white">
       <header className="sticky top-0 z-10 border-b border-white/10 bg-[#0f2440]">
@@ -58,7 +65,7 @@ export function SerieAMatchDetailScreen({ detail }: { detail: MatchDetailMock })
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-8">
-        <SerieAMatchDetailView detail={detail} />
+        <SerieAMatchDetailView detail={detail} statTargetsApi={statTargetsApi} />
       </main>
     </div>
   );

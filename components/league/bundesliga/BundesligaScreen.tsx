@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import { BundesligaView } from "./BundesligaView";
 
 export function BundesligaScreen() {
-  return <BundesligaView />;
+  return (
+    <Suspense fallback={null}>
+      <BundesligaView />
+    </Suspense>
+  );
 }

@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import { SerieAView } from "./SerieAView";
 
 export function SerieAScreen() {
-  return <SerieAView />;
+  return (
+    <Suspense fallback={null}>
+      <SerieAView />
+    </Suspense>
+  );
 }

@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import { LaLigaView } from "./LaLigaView";
 
 export function LaLigaScreen() {
-  return <LaLigaView />;
+  return (
+    <Suspense fallback={null}>
+      <LaLigaView />
+    </Suspense>
+  );
 }

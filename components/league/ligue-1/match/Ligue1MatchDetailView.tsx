@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { DesiredStatsModalTrigger } from "@/components/match/DesiredStatsModalTrigger";
+import type { StatTargetsApiContext } from "@/lib/api/stat-targets-types";
 import {
   LIGUE1_BG_DEEP,
   LIGUE1_BG_SURFACE,
@@ -317,7 +318,13 @@ function PredictionBlock({
 
 type SideTab = "stats" | "predictions";
 
-export function Ligue1MatchDetailView({ detail }: { detail: MatchDetailMock }) {
+export function Ligue1MatchDetailView({
+  detail,
+  statTargetsApi,
+}: {
+  detail: MatchDetailMock;
+  statTargetsApi?: StatTargetsApiContext | null;
+}) {
   const [sideTab, setSideTab] = useState<SideTab>("stats");
   const { homeTeam, awayTeam, status, homeScore, awayScore, dateLabel, minute } = detail;
 
@@ -420,6 +427,7 @@ export function Ligue1MatchDetailView({ detail }: { detail: MatchDetailMock }) {
                   awayTeam={awayTeam}
                   accentBackground={ligue1AccentBlue}
                   accentForeground="#ffffff"
+                  statTargetsApi={statTargetsApi ?? undefined}
                 />
               ) : null}
             </div>

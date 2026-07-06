@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { DesiredStatsModalTrigger } from "@/components/match/DesiredStatsModalTrigger";
+import type { StatTargetsApiContext } from "@/lib/api/stat-targets-types";
 import { laLigaAccent } from "../constants/laLigaAccent";
 import type {
   MatchDetailMock,
@@ -290,7 +291,13 @@ function PredictionBlock({
 
 type SideTab = "stats" | "predictions";
 
-export function LaLigaMatchDetailView({ detail }: { detail: MatchDetailMock }) {
+export function LaLigaMatchDetailView({
+  detail,
+  statTargetsApi,
+}: {
+  detail: MatchDetailMock;
+  statTargetsApi?: StatTargetsApiContext | null;
+}) {
   const [sideTab, setSideTab] = useState<SideTab>("stats");
   const { homeTeam, awayTeam, status, homeScore, awayScore, dateLabel, minute } = detail;
 
@@ -383,6 +390,7 @@ export function LaLigaMatchDetailView({ detail }: { detail: MatchDetailMock }) {
                   awayTeam={awayTeam}
                   accentBackground={laLigaAccent}
                   accentForeground="#ffffff"
+                  statTargetsApi={statTargetsApi ?? undefined}
                 />
               ) : null}
             </div>

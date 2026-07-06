@@ -35,7 +35,7 @@ export function HomeScreen() {
                       width={88}
                       height={88}
                       draggable={false}
-                      className={`${logoSvgClass} transition-[filter,transform] duration-300 ease-out ${
+                      className={`${c.logoClassName ?? logoSvgClass} transition-[filter,transform] duration-300 ease-out ${
                         c.logoHover === "white"
                           ? "group-hover:brightness-0 group-hover:invert"
                           : "group-hover:scale-[1.04] group-hover:drop-shadow-[0_2px_8px_rgba(0,0,0,0.15)]"
@@ -46,6 +46,12 @@ export function HomeScreen() {
               </>
             );
 
+            const badge = c.badgeLabel ? (
+              <span className="absolute right-2 top-2 z-20 rounded-full bg-neutral-800/80 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white sm:text-[10px]">
+                {c.badgeLabel}
+              </span>
+            ) : null;
+
             return (
               <li key={c.id}>
                 {c.leagueHref ? (
@@ -54,11 +60,16 @@ export function HomeScreen() {
                     className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2"
                   >
                     <article className={articleClassName} aria-label={c.title}>
+                      {badge}
                       {logo}
                     </article>
                   </Link>
                 ) : (
-                  <article className={`group ${articleClassName}`}>
+                  <article
+                    className={`group ${articleClassName}`}
+                    aria-label={c.title}
+                  >
+                    {badge}
                     {logo}
                   </article>
                 )}

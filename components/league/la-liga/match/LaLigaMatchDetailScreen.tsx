@@ -3,6 +3,7 @@
 import Link from "next/link";
 import laLigaLogo from "@/svgs/competitions/spain_la-liga.football-logos.cc.svg";
 import { laLigaAccent } from "../constants/laLigaAccent";
+import type { StatTargetsApiContext } from "@/lib/api/stat-targets-types";
 import type { MatchDetailMock } from "../mocks/laLigaMatchDetailMock";
 import { LaLigaMatchDetailView } from "./LaLigaMatchDetailView";
 
@@ -22,7 +23,13 @@ function BackArrowIcon({ className }: { className?: string }) {
   );
 }
 
-export function LaLigaMatchDetailScreen({ detail }: { detail: MatchDetailMock }) {
+export function LaLigaMatchDetailScreen({
+  detail,
+  statTargetsApi,
+}: {
+  detail: MatchDetailMock;
+  statTargetsApi?: StatTargetsApiContext | null;
+}) {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       <header className="sticky top-0 z-10 border-b border-slate-200 bg-white shadow-sm">
@@ -60,7 +67,7 @@ export function LaLigaMatchDetailScreen({ detail }: { detail: MatchDetailMock })
       </header>
 
       <main className="mx-auto max-w-6xl bg-slate-50/50 px-4 py-8 sm:px-8">
-        <LaLigaMatchDetailView detail={detail} />
+        <LaLigaMatchDetailView detail={detail} statTargetsApi={statTargetsApi} />
       </main>
     </div>
   );

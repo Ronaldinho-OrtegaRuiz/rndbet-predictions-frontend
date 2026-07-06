@@ -7,6 +7,7 @@ import {
   BUNDESLIGA_BORDER,
   bundesligaAccent,
 } from "../constants/bundesligaTheme";
+import type { StatTargetsApiContext } from "@/lib/api/stat-targets-types";
 import type { MatchDetailMock } from "../mocks/bundesligaMatchDetailMock";
 import { BundesligaMatchDetailView } from "./BundesligaMatchDetailView";
 
@@ -26,7 +27,13 @@ function BackArrowIcon({ className }: { className?: string }) {
   );
 }
 
-export function BundesligaMatchDetailScreen({ detail }: { detail: MatchDetailMock }) {
+export function BundesligaMatchDetailScreen({
+  detail,
+  statTargetsApi,
+}: {
+  detail: MatchDetailMock;
+  statTargetsApi?: StatTargetsApiContext | null;
+}) {
   return (
     <div className="min-h-screen bg-[#000e14] text-white">
       <header
@@ -71,7 +78,7 @@ export function BundesligaMatchDetailScreen({ detail }: { detail: MatchDetailMoc
         style={{ backgroundColor: BUNDESLIGA_BG_CONTENT }}
       >
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-8">
-          <BundesligaMatchDetailView detail={detail} />
+          <BundesligaMatchDetailView detail={detail} statTargetsApi={statTargetsApi} />
         </div>
       </main>
     </div>

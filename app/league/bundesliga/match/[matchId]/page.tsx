@@ -1,8 +1,9 @@
 import {
   getMatchDetailBySlug,
-  PremierLeagueMatchDetailScreen,
+  BundesligaMatchDetailScreen,
   tryParseMatchSlug,
-} from "@/components/league/premier-league";
+} from "@/components/league/bundesliga";
+import type { MatchDetailMock } from "@/components/league/bundesliga/mocks/bundesligaMatchDetailMock";
 import {
   authRedirectForMatch,
   generateApiLeagueMatchMetadata,
@@ -26,19 +27,19 @@ export async function generateMetadata({
   const parsed = tryParseMatchSlug(matchId);
   if (parsed) {
     return {
-      title: `${parsed.homeTeam} vs ${parsed.awayTeam} | Premier League | RND Predictions`,
+      title: `${parsed.homeTeam} vs ${parsed.awayTeam} | Bundesliga | RND Predictions`,
       description: `Detalle del partido ${parsed.homeTeam} contra ${parsed.awayTeam}.`,
     };
   }
   return generateApiLeagueMatchMetadata(
-    "premier-league",
+    "bundesliga",
     matchId,
     sp.round,
     sp.season,
   );
 }
 
-export default async function PremierLeagueMatchPage({
+export default async function BundesligaMatchPage({
   params,
   searchParams,
 }: Props) {
@@ -46,14 +47,14 @@ export default async function PremierLeagueMatchPage({
   const sp = await searchParams;
 
   const resolved = await resolveApiLeagueMatchPage(
-    "premier-league",
+    "bundesliga",
     matchId,
     sp.round,
     sp.season,
   );
   if (resolved === "auth") {
     authRedirectForMatch(
-      "premier-league",
+      "bundesliga",
       matchId,
       Number(sp.round),
       parseSeasonYear(sp.season) ?? defaultSeasonYear(),
@@ -61,8 +62,8 @@ export default async function PremierLeagueMatchPage({
   }
   if (resolved !== "notfound") {
     return (
-      <PremierLeagueMatchDetailScreen
-        detail={resolved.detail}
+      <BundesligaMatchDetailScreen
+        detail={resolved.detail as unknown as MatchDetailMock}
         statTargetsApi={resolved.statTargetsApi}
       />
     );
@@ -70,5 +71,5 @@ export default async function PremierLeagueMatchPage({
 
   const detail = getMatchDetailBySlug(matchId);
   if (!detail) notFound();
-  return <PremierLeagueMatchDetailScreen detail={detail} />;
+  return <BundesligaMatchDetailScreen detail={detail} />;
 }

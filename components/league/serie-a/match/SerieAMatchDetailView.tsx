@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { DesiredStatsModalTrigger } from "@/components/match/DesiredStatsModalTrigger";
+import type { StatTargetsApiContext } from "@/lib/api/stat-targets-types";
 import { serieAAccent, serieAOnAccent } from "../constants/serieAAccents";
 import type {
   MatchDetailMock,
@@ -289,7 +290,13 @@ function PredictionBlock({
 
 type SideTab = "stats" | "predictions";
 
-export function SerieAMatchDetailView({ detail }: { detail: MatchDetailMock }) {
+export function SerieAMatchDetailView({
+  detail,
+  statTargetsApi,
+}: {
+  detail: MatchDetailMock;
+  statTargetsApi?: StatTargetsApiContext | null;
+}) {
   const [sideTab, setSideTab] = useState<SideTab>("stats");
   const { homeTeam, awayTeam, status, homeScore, awayScore, dateLabel, minute } = detail;
 
@@ -382,6 +389,7 @@ export function SerieAMatchDetailView({ detail }: { detail: MatchDetailMock }) {
                   awayTeam={awayTeam}
                   accentBackground={serieAAccent}
                   accentForeground={serieAOnAccent}
+                  statTargetsApi={statTargetsApi ?? undefined}
                 />
               ) : null}
             </div>

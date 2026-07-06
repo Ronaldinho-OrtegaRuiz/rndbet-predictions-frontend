@@ -1,8 +1,9 @@
 import {
   getMatchDetailBySlug,
-  PremierLeagueMatchDetailScreen,
+  Ligue1MatchDetailScreen,
   tryParseMatchSlug,
-} from "@/components/league/premier-league";
+} from "@/components/league/ligue-1";
+import type { MatchDetailMock } from "@/components/league/ligue-1/mocks/ligue1MatchDetailMock";
 import {
   authRedirectForMatch,
   generateApiLeagueMatchMetadata,
@@ -26,34 +27,26 @@ export async function generateMetadata({
   const parsed = tryParseMatchSlug(matchId);
   if (parsed) {
     return {
-      title: `${parsed.homeTeam} vs ${parsed.awayTeam} | Premier League | RND Predictions`,
+      title: `${parsed.homeTeam} vs ${parsed.awayTeam} | Ligue 1 | RND Predictions`,
       description: `Detalle del partido ${parsed.homeTeam} contra ${parsed.awayTeam}.`,
     };
   }
-  return generateApiLeagueMatchMetadata(
-    "premier-league",
-    matchId,
-    sp.round,
-    sp.season,
-  );
+  return generateApiLeagueMatchMetadata("ligue-1", matchId, sp.round, sp.season);
 }
 
-export default async function PremierLeagueMatchPage({
-  params,
-  searchParams,
-}: Props) {
+export default async function Ligue1MatchPage({ params, searchParams }: Props) {
   const { matchId } = await params;
   const sp = await searchParams;
 
   const resolved = await resolveApiLeagueMatchPage(
-    "premier-league",
+    "ligue-1",
     matchId,
     sp.round,
     sp.season,
   );
   if (resolved === "auth") {
     authRedirectForMatch(
-      "premier-league",
+      "ligue-1",
       matchId,
       Number(sp.round),
       parseSeasonYear(sp.season) ?? defaultSeasonYear(),
@@ -61,8 +54,8 @@ export default async function PremierLeagueMatchPage({
   }
   if (resolved !== "notfound") {
     return (
-      <PremierLeagueMatchDetailScreen
-        detail={resolved.detail}
+      <Ligue1MatchDetailScreen
+        detail={resolved.detail as unknown as MatchDetailMock}
         statTargetsApi={resolved.statTargetsApi}
       />
     );
@@ -70,5 +63,5 @@ export default async function PremierLeagueMatchPage({
 
   const detail = getMatchDetailBySlug(matchId);
   if (!detail) notFound();
-  return <PremierLeagueMatchDetailScreen detail={detail} />;
+  return <Ligue1MatchDetailScreen detail={detail} />;
 }
